@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: californiaapprs
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        name: california-app
+  template:
+    metadata:
+      labels:
+        name: california-app
+    spec:
+      containers:
+      - name: californiaapp
+        image: subaniprasad/californiaapp:1
+

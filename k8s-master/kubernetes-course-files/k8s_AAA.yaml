@@ -1,0 +1,52 @@
+# At Master node
+cd ~
+sudo cp /etc/kubernetes/pki/ca.* .
+sudo chown vagrant:vagrant ca.crt
+sudo chown vagrant:vagrant ca.key
+
+
+
+#Generate openssl certificates
+openssl genrsa -out private-key-prasad.key 2048
+openssl req -new -key private-key-prasad.key -out req-prasad.csr -subj "/CN=prasad/O=formac"
+openssl x509 -req -in req-prasad.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out prasad.crt -days 365
+
+# Change permissions of certificates to 400
+sudo chmod 400 ca.crt
+sudo chmod 400 ca.key
+sudo chmod 400 private-key-prasad.key
+sudo chmod 400 req-prasad.csr
+sudo chmod 400 prasad.crt
+
+#Create prasad user
+sudo useradd prasad
+
+#copy certificates to User folder from superuser
+sudo mkdir -p /home/prasad/.certs
+sudo cp prasad.crt /home/prasad/.certs/.
+sudo cp private-key-prasad.key /home/prasad/.certs/.
+sudo cp ca.crt /home/prasad/.certs/.
+sudo ls -l /home/prasad/.certs/
+sudo chown -p prasad:prasad /home/prasad/.certs
+sudo chown -R prasad:prasad /home/prasad/.certs
+sudo ls -l /home/prasad/.certs/
+su - prasad
+
+
+
+#while dealing with multiple cluster contexts will be very useful
+#Set Context to user
+kubectl config set-cluster kubernetes --server https://172.32.32.100:6443
+kubectl config set-context prasadcontext --user prasad --cluster kubernetes
+kubectl config use-context prasadcontext
+
+#install the certificates from enduser
+kubectl config set-credentials prasad --client-certificate=prasad.crt --client-key=private-key-prasad.key
+kubectl config view
+kubectl get pods
+kubectl config set-cluster kubernetes --certificate-authority=ca.crt
+kubectl config view
+kubectl get all
+kubectl get pods
+kubectl get pods -n kube-system
+kubectl get svc

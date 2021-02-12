@@ -1,0 +1,16 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cjob
+spec:
+  schedule: "* * * * *"
+  jobTemplate: 
+    spec: 
+      template:
+        spec:
+          containers:
+          - name: cjob
+            image: python:3-alpine
+            command: ["python"]
+            args: ["-c","import time; print ('starting'); time.sleep(30); print('done')"]
+          restartPolicy: Never

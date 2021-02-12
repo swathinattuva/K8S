@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: public-routing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    #service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /apache
+            backend:
+              serviceName: apache-webapp
+              servicePort: 80
+
+    - http:
+        paths:
+          - path: /nginx
+            backend:
+              serviceName: nginx-webapp
+              servicePort: 80

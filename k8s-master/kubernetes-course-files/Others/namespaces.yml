@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: californiaapp
+  namespace: demo
+
+spec:
+  containers:
+  - name: californiaapp
+    image: subaniprasad/californiaapp:1

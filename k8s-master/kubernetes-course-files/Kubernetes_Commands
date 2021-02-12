@@ -1,0 +1,86 @@
+# Get Kubernetes cluster CPU Memory Utilization
+kubectl get nodes --no-headers | awk '{print $1}' | xargs -I {} sh -c 'echo {}; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo'
+
+# Deployment commands
+kubectl rollout history deployment/fleetman-application
+kubectl rollout history deployment/fleetman-application --revision=1
+kubectl rollout status deployment/fleetman-application
+
+#Documentation commands
+kubectl --api-version
+kubectl api-resources
+kubectl api-resources -o wide
+kubectl explain deployments
+kubectl explain replicaset
+kubectl explain replicaset.spec
+kubectl explain replicaset.spec.template
+kubectl explain replicaset.spec.template.spec
+
+#Demo image
+richardchesterwood/k8s-fleetman-webapp-angular:release0-5
+
+#Label cluster nodes
+kubectl get nodes -l gpupresent=true
+kubectl label node kworker1.example.com color=blue
+kubectl label node kworker2.example.com color=green
+
+#Name spaces
+kubectl get ns 
+kubectl get pods -n kube-system
+kubectl create namespace demo 
+
+servicename.namespace.svc.cluster.local
+
+californiaapp.default.svc.cluster.local
+
+sudo yum install cockpit cockpit-kubernetes -y
+sudo systemctl enable cockpit -y
+sudo systemctl start cockpit -y
+
+
+/root/.my.cnf
+
+#Check Master component status
+kubectl get componentstatus
+kubectl get cs
+
+#while dealing with multiple cluster contexts will be very useful
+#Set Context to user
+kubectl config set-cluster kubernetes --server https://172.42.42.100:6443
+kubectl config set-context prasadcontext --user prasad --cluster kubernetes
+kubectl config use-context prasadcontext
+
+#Generate openssl certificates
+openssl genrsa -out private-key-prasad.key 2048 
+openssl req -new -key private-key-prasad.key -out req-prasad.csr -subj "/CN=prasad/O=prasad"
+openssl x509 -req -in req-prasad.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out prasad.crt -days 365
+
+#copy certificates to User folder from superuser
+sudo mkdir -p /home/prasad/.certs
+sudo cp prasad.crt /home/prasad/.certs/.
+sudo cp private-key-prasad.key /home/prasad/.certs/.
+sudo cp ca.crt /home/prasad/.certs/.
+sudo ls -l /home/prasad/.certs/
+sudo chown -p prasad:prasad /home/prasad/.certs
+sudo chown -R prasad:prasad /home/prasad/.certs
+sudo ls -l /home/prasad/.certs/
+su - prasad
+
+#install the certificates from enduser
+kubectl config set-credentials prasad --client-certificate=prasad.crt --client-key=private-key-prasad.key 
+kubectl config view
+kubectl get pods
+kubectl config set-cluster kubernetes --certificate-authority=ca.crt
+kubectl config view
+kubectl get all
+kubectl get pods
+kubectl get pods -n kube-system
+kubectl get svc
+
+#Kubedb Statefulset demo
+kubectl get secrets mysql-quickstart-auth -o jsonpath='{.data.\username}' | base64 -d
+kubectl get secrets mysql-quickstart-auth -o jsonpath='{.data.\password}' | base64 -d
+kubectl exec -it mysql-quickstart-0 -- mysql -u root --password=0fOFBXAtYgLwWlDl -e "ALTER USER root IDENTIFIED WITH mysql_native_password BY '0fOFBXAtYgLwWlDl';"
+
+
+

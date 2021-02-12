@@ -1,0 +1,86 @@
+    5  kubectl auth can-i list pods -n development
+    6  kubectl auth can-i list pods -n development --as=john
+    7  ls
+    8  vim john-csr.yaml
+    9  cat john.csr | base64 | tr -d '\n'
+   10  vim john-csr.yaml
+   11  kubectl get csr
+   12  clear
+   13  kubectl apply -f john-csr.yaml
+   14  kubectl get csr
+   15  kubectl certificate approve john-csr
+   16  kubectl get csr
+   17  kubectl auth can-i list pods -n development --as=john
+   18  kubectl api-versions -o wide
+   19  kubectl api-versions
+   20  kubectl api-resources -o wide
+   21  clear
+   22  #kubectl create role john-role --resource=pods --namespace=development --verb=create,list,get,update
+   23  kubectl api-versions -o wide
+   24  kubectl api-resources -o wide
+   25  clear
+   26  kubectl create role john-role --resource=pods --namespace=development --verb=create,list,get,update --dry-run -o yaml
+   27  kubectl create role john-role --resource=pods --namespace=development --verb=create,list,get,update --dry-run -o yaml > john-rbac.yaml
+   28  echo "---" >> john-rbac.yaml
+   29  kubectl create rolebinding --role=john-role --namespace=development --user=john --dry-run -o yaml
+   30  kubectl create rolebindin --role=john-role --namespace=development --user=john --dry-run -o yaml
+   31  kubectl create rolebinding --role=john-role --namespace=development --user=john --dry-run -o yaml
+   32  kubectl create rolebinding --role=john-role --namespace=development --username=john --dry-run -o yaml
+   33  kubectl apply -f john-rbac.yaml
+   34  kubectl create rolebinding --role=john-role --namespace=development --username=john --dry-run -o yaml
+   35  kubectl create rolebinding john-role-binding --role=john-role --namespace=development --username=john --dry-run -o yaml
+   36  kubectl create rolebinding john-role-binding --role=john-role --namespace=development --user=john --dry-run -o yaml
+   37  kubectl create rolebinding john-role-binding --role=john-role --namespace=development --user=john --dry-run -o yaml >> john-rbac.yaml
+   38  kubectl auth can-i list pods -n development --as=john
+   39  kubectl apply -f john-rbac.yaml
+   40  kubectl auth can-i list pods -n development --as=john
+   41  kubectl get role
+   42  cat john-rbac.yaml
+   43  kubectl get role -n development
+   44  kubectl
+   45  kubectl deletet -f john-rbac.yaml
+   46  kubectl delete -f john-rbac.yaml
+   47  vim john-rbac.yaml
+   48  kubectl apply -f john-rbac.yaml
+   49  clear
+   50  kubectl auth can-i list pods -n development --as=john
+   51  kubectl auth can-i watch pods -n development --as=john
+   52  kubectl get all
+   53  kubectl get all -n development
+   54  kubectl get role,rolebinding -n development
+
+
+   --------
+
+       3  kubectl get clusterrole
+    4  clear
+    5  kubectl get clusterrole | grep pvviewer-role
+    6  kubectl create serviceaccount pvviewer --dry-run -o yaml
+    7  kubectl create serviceaccount pvviewer --dry-run -o yaml > pvviewer-sa.yaml
+    8  kubectl apply -f pvviewer-sa.yaml
+    9  kubectl get clusterrole | grep pvviewer-role
+   10  kubectl get clusterrole | grep pvviewer
+   11  clear
+   12  kubectl get sa
+   13  kubectl create clusterrole pvviewer-role --resource=persistentvolumes --verb=list --dry-run -o yaml
+   14  kubectl create clusterrole pvviewer-role --resource=persistentvolumes --verb=list --dry-run -o yaml > pvviewer-rbac.yaml
+   15  echo "---" >> pvviewer-rbac.yaml
+   16  kubectl create clusterrolebinding pvviewer-role-binding --serviceaccount=pvviewer --dry-run -o yaml
+   17  kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=pvviewer --dry-run -o yaml
+   18  clear
+   19  kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=pvviewer --dry-run -o yaml
+   20  kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=pvviewer --namespace=default --dry-run -o yaml
+   21  kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer  --dry-run -o yaml
+   22  kubectl create clusterrolebinding pvviewer-role-binding --clusterrole=pvviewer-role --serviceaccount=default:pvviewer  --dry-run -o yaml >> pvviewer-rbac.yaml
+   23  clear
+   24  cat pvviewer-rbac.yaml
+   25  kubectl apply -f pvviewer-rbac.yaml
+   26  clear
+   27  kubectl run pvviewer --image=redis --serviceaccount=pvviewer --restart=Never --dry-run -o yaml
+   28  kubectl run pvviewer --image=redis --serviceaccount=pvviewer --restart=Never --dry-run -o yaml > pvviewer-pod.yaml
+   29  kubectl apply -f pvviewer-pod.yaml
+   30  clear
+   31  kubectl get pod
+   32  kubectl api-resources -o wide
+   33  kubectl api-resources -o wide | grep serviceaccount
+   34  history

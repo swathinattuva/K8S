@@ -1,0 +1,27 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: <Cert>
+    server: https://api.k8s.enjoylife.org.in
+  name: k8s.enjoylife.org.in
+contexts:
+- context:
+    cluster: k8s.enjoylife.org.in
+    namespace: development
+    user: k8s.enjoylife.org.in-developer
+  name: k8s.enjoylife.org.in-developer
+current-context: k8s.enjoylife.org.in-developer
+kind: Config
+preferences: {}
+users:
+- name: k8s.enjoylife.org.in-developer
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-iam-authenticator
+      args:
+      - token
+      - -i
+      - k8s.enjoylife.org.in
+      - -r
+      - arn:aws:iam::<AWS_ACCOUNT_ID>:role/kops_iam_developer

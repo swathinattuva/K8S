@@ -1,0 +1,116 @@
+export NAME=myfirstcluster.k8s.local
+export KOPS_STATE_STORE=s3://kops-production-prasad
+ssh-keygen 
+kops create cluster --zones ap-south-1a,ap-south-1b,ap-south-1c ${NAME}
+
+kops get ig --name ${NAME}
+kops edit ig nodes --name ${NAME}
+kops get ig --name ${NAME}
+
+kops edit ig <ig_name>
+
+kops update cluster ${NAME} --yes
+
+kops validate cluster
+
+#to see the admin password
+kubectl config view
+
+#dasbaoard API URI
+/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+
+#helm
+
+kubectl create serviceaccount --namespace kube-system tiller
+
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' 
+
+helm init
+helm home
+helm repo list
+helm search jenkins
+helm inspect stable/mysql
+helm inspect stable/jenkins
+helm fetch stable/jenkins
+helm list
+
+helm search prometheus
+helm search grafana
+
+helm inspect values stable/prometheus-operator > prometheus.values
+
+kubectl get customresourcedefinitions
+
+#Monitoring Prometheus and grafana using helm
+helm install --name k8smonitoring --namespace k8s-monitoring stable/prometheus-operator
+kubectl edit service/prometheus-prometheus-oper-prometheus -n monitoring
+
+kops edit cluster --name ${NAME}
+authenticationTokenWebhook: true    
+authorizationMode: Webhook
+kops rolling-update cluster --yes
+
+
+#Nginx Ingress Controller using kops
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/aws/service-l4.yaml 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/aws/patch-configmap-l4.yaml
+kubectl get pods --all-namespaces
+kubectl get svc --all-namespaces
+
+kubectl run nginx --image=nginx --port=80
+kubectl expose deployment nginx --target-port=80 --type=NodePort
+kubectl get po,svc
+----------- vi nginx-ingress.yml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-ing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /test
+        backend:
+          serviceName: nginx
+          servicePort: 80
+ -----------------
+
+kubectl run echoserver --image=gcr.io/google_containers/echoserver:1.4
+kubectl expose deployment echoserver --target-port=8080 --type=NodePort
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fanout-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: httpd
+          servicePort: 80
+  - californiaap:
+      paths:
+      - path: /echo
+        backend:
+          serviceName: echoserver
+          servicePort: 8080
+
+kubectl apply -f ingress.yml
+
+VPC_ID=vpc-0c84d4f7939e7d183
+aws ec2 create-security-group --description ingress.$NAME --group-name ingress.$NAME --vpc-id $VPC_ID --region ap-south-1
+aws ec2 describe-security-groups --filter Name=vpc-id,Values=$VPC_ID  Name=group-name,Values=ingress.$NAME --region ap-south-1
+sgidingress=$(aws ec2 describe-security-groups --filter Name=vpc-id,Values=$VPC_ID  Name=group-name,Values=ingress.$NAME | jq '.["SecurityGroups"][0]["GroupId"]' -r)
+sgidnode=$(aws ec2 describe-security-groups --filter Name=vpc-id,Values=$VPC_ID  Name=group-name,Values=nodes.$NAME | jq '.["SecurityGroups"][0]["GroupId"]' -r)
+aws ec2 authorize-security-group-ingress --group-id $sgidingress --protocol tcp --port 443 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id $sgidingress --protocol tcp --port 80 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-egress --group-id $sgidingress --protocol all --port -1 --cidr 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id $sgidnode --protocol all --port -1 --source-group $sgidingress
+aws ec2 create-tags --resources $sgidingress --tags Key="kubernetes.io/cluster/${NAME}",Value="owned" Key="kubernetes:application",Value="kube-ingress-aws-controller"

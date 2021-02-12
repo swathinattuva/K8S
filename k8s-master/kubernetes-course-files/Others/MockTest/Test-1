@@ -1,0 +1,123 @@
+   3  kubectl run nginx-pod --image=nginx:alpine --restart=Never --dry-run -o yaml
+    4  kubectl run nginx-pod --image=nginx:alpine --restart=Never --dry-run -o yaml > nginx-pod.yaml
+    5  kubectl apply -f nginx-pod.yaml
+    6  kubectl run messaging --labels=tier=msg --image=redis:alpine --restart=Never --dry-run -o yaml > messaging-pod.yaml
+    7  cat messaging-pod.yaml
+    8  kubectl apply -f messaging-pod.yaml
+    9  clear
+   10  kubectl create ns apx-x9984574
+   11  kubectl get nodes -o json /opt/outputs/nodes-z3444kd9.json
+   12  kubectl get nodes -o json > /opt/outputs/nodes-z3444kd9.json
+   13  kubectl expose pod messaging --name=messaging-service --port=6379 --dry-run -o yaml
+   14  kubectl expose pod messaging --name=messaging-service --port=6379 --dry-run -o yaml > messaging-service.yaml
+   15  kubectl apply -f messaging-service.yaml
+   16  clear
+   17  kubectl get all
+   18  curl 10.106.136.186:6379
+   19  curl http://10.106.136.186:6379
+   20  clear
+   21  kubectl run hr-web-app --image=kodekloud/webapp-color --replicas=2 --restart=Always --dry-run -o yaml
+   22  kubectl run hr-web-app --image=kodekloud/webapp-color --replicas=2 --restart=Always --dry-run -o yaml> ht-web-app.yaml
+   23  clear
+   24  kubectl apply -f .
+   25  kubectl run static-busybox --image=busybox --command=true sleep 1000 --restart=Never --dry-run -o yaml
+   26  kubectl run static-busybox --image=busybox --command=true sleep 1000 --restart=Never --dry-run -o yaml > /etc/kubernetes/manifests/static-busybox.yaml
+   27  clear
+   28  service kubelet restart
+   29  ps -ef | grep kubelet
+   30  ps -ef | grep kubelet | grep config
+   31  clear
+   32  cat /var/lib/kubelet/config.yaml
+   33  kubectl get all -n kube-system
+   34  clear
+   35  docker ps -n 1
+   36* docker ps -
+   37  docker ps -n 2
+   38  clear
+   39  docker ps | grep messaging
+   40  docker ps
+   41  clear
+   42  kubectl run temp-bus --image=temp-bus  --restart=Never --dry-run -o yaml
+   43  kubectl gt ns
+   44  kubectl get ns
+   45  clear
+   46  kubectl run | grep -i namespace
+   47  kubectl run --help  | grep -i namespace
+   48  clear
+   49  kubectl run temp-bus --image=temp-bus  --namespace=finance --restart=Never --dry-run -o yaml
+   50  kubectl run temp-bus --image=temp-bus  --namespace=finance --restart=Never --dry-run -o yaml  > temp-bus.yaml
+   51  vim temp-bus.yaml
+   52  kubectl apply -f .
+   53  clear
+   54  kubectl get all -n finance
+   55  vim temp-bus.yaml
+   56  kubectl delete -f temp-bus.yaml
+   57  kubectl apply -f .
+   58  kubectl get all -n finance
+   59  clear
+   60  kubectl get componentstatuses
+   61  kubect get all
+   62  kubectl get all
+   63  kubectl describe po orange
+   64  clear
+   65  kubectl describe po orange
+   66  kubectl edit po orange
+   67  kubectl get po orange -o yaml > orange-pod.yaml
+   68  kubectl delete po orange
+   69  vim orange-pod.yaml
+   70  kubectl apply -f orange-pod.yaml
+   71  clear
+   72  kubectl get all
+   73  watch -n kubectl get all
+   74  watch kubectl get all
+   75  clear
+   76  kubectl get all
+   77  kubectl expose deploy hr-web-app --name=hr-web-app-servic --type=NodePort --port=8080 --NodePort=30082 --dry-run -o yaml
+   78  clear
+   79  kubectl expose deploy hr-web-app --name=hr-web-app-servic --type=NodePort --port=8080  --dry-run -o yaml
+   80  kubectl expose deploy hr-web-app --name=hr-web-app-servic --type=NodePort --port=8080  --dry-run -o yaml > hr-web-app-service.yaml
+   81  vim hr-web-app-service.yaml
+   82  kubectl apply -f hr-web-app-service.yaml
+   83  clear
+   84  kubectl get all
+   85  curl 10.105.1.138:8080
+   86  clear
+   87  kubectl get nodes | grep osImages
+   88  kubectl get nodes | grep osImage
+   89  kubectl get nodes -o json | grep osImage
+   90  kubectl get nodes -o yaml | grep osImage
+   91  kubectl get nodes -o yaml | grep osImage > /opt/outputs/nodes_os_x43kj56.txt
+   92  kubectl get pv
+   93  kubectl explain persistentVolume
+   94  kubectl explain persistentVolume.apiVersion
+   95  vim pv-analytics.yaml
+   96  kubectl explain persistentVolume.spec
+   97  kubectl explain persistentVolume.spec.accessModes
+   98  vim pv-analytics.yaml
+   99  kubectl explain persistentVolume.spec.hostPath
+  100  vim pv-analytics.ya
+  101  vim pv-analytics.yaml
+  102  kubectl explain persistentVolume.spec.hostPath
+  103  vim pv-analytics.yaml
+  104  kubectl explain persistentVolume.spec.
+  105  kubectl explain persistentVolume.spec.capacity
+  106  vim pv-analytics.yaml
+  107  kubectl apply -f pv-analytics.yaml --dry-run --validate
+  108  kubectl explain persistentVolume.spec.accessModes
+  109  vim pv-analytics.yaml
+  110* kubectl apply -f pv-analytics.yaml --dry-run --validate
+  111  vim pv-analytics.yaml
+  112  kubectl apply -f pv-analytics.yaml --dry-run --validate
+  113  kubectl explain persistentVolume.spec.capacity
+  114  q!
+  115  kubectl explain persistentVolume.spec.capacity
+  116  kubectl explain persistentVolume.spec.capacity.storage
+  117  clear
+  118  vim pv-analytics.yaml
+  119  kubectl apply -f pv-analytics.yaml --dry-run --validate
+  120  kubectl apply -f pv-analytics.yaml
+  121  kubectl expose deployment hr-web-app --type=NodePort --port=8080 --name=hr-web-app-service --dry-run -o yaml > hr-web-app-service-correct.yaml
+  122  clear
+  123  cat hr-web-app-service.yaml
+  124  cat hr-web-app-service-correct.yaml
+  125  history

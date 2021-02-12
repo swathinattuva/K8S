@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Kops Provisioning
+
+Parameters:
+
+  kopsIamGroupName:
+    Type: String
+    Description: Kops IAM Group Name
+    Default: kops
+
+  kopsIamRoleName:
+    Type: String
+    Description: Kops IAM Role Name
+    Default: kops
+
+  kopsS3BcuketName:
+    Type: String
+    Description: Kops S3 Bucket Name
+    Default: kops-production-prasad
+  
+  kopsBootStrapInstanceAMI:
+    Type: String
+    Description: Kops Bootstrap Instance AMI ID
+    Default: ami-0b99c7725b9484f9e
+
+  kopsBootstrapInstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues: 
+      - t2.micro
+      - t2.small
+      - t2.medium
+    Description: Enter t2.micro, t2.small, or t2.medium. Default is t2.micro.
+
+  kopsBootStrapInstanceKeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Kops Bootstrap Instance KeyPair
+    ConstraintDescription: Existing EC2 KeyPair.
+
+  kopsBootStrapInstanceSGID:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Kops Bootstrap Instance SecurityGroup
+
+  kopsBootStrapInstanceSubnetID:
+    Type: AWS::EC2::Subnet::Id
+    Description: Kops Bootstrap Instance SubnetID
+
+  kopsBootStrapInstanceVpcID:
+    Type: AWS::EC2::VPC::Id
+    Description: Kops Bootstrap Instance VPC
+
+    
+
+  
+Resources:
+
+
+  kopsIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Ref kopsIamRoleName
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+                - "route53.amazonaws.com"
+                - "s3.amazonaws.com"
+                - "iam.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns: 
+          - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+          - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/IAMFullAccess
+          - arn:aws:iam::aws:policy/AmazonVPCFullAccess
+  
+
+  kopsInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      InstanceProfileName: !Ref kopsIamRoleName
+      Roles:
+        -
+          Ref: kopsIAMRole
+
+
+  kopsS3Bcuket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref kopsS3BcuketName
+      Tags:
+        - Key: "Name"
+          Value: "kopsConfigBucket"
+
+
+          
+
+  
+  kopsBootStrapInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      DisableApiTermination: false
+      IamInstanceProfile: !Ref kopsIAMRole
+      ImageId: !Ref kopsBootStrapInstanceAMI
+      InstanceType: !Ref kopsBootstrapInstanceType
+      KeyName: !Ref kopsBootStrapInstanceKeyPair
+      Monitoring: false
+      SecurityGroupIds:
+        - !Ref kopsBootStrapInstanceSGID
+      SubnetId: !Ref kopsBootStrapInstanceSubnetID
+      Tags:
+        - Key: "Name"
+          Value: "kops-Bootstrap"
+      UserData:
+        Fn::Base64: !Sub |
+            #!/bin/bash 
+            yum update -y 
+            curl -Lo kops https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+            chmod +x ./kops
+            sudo mv ./kops /usr/local/bin/
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+            export NAME=myfirstcluster.k8s.local
+            export KOPS_STATE_STORE=s3://kops-production-prasad
+
+  
+Outputs:
+
+  kopsS3Bucket:
+    Value: !GetAtt kopsS3Bcuket.DomainName
+
+  kopsBootStrapInstancePublicDNS:
+    Value: !GetAtt kopsBootStrapInstance.PublicDnsName
+
+  kopsBootStrapInstancePrivateDNS:
+    Value: !GetAtt kopsBootStrapInstance.PrivateDnsName

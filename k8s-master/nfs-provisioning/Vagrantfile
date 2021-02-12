@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.define "nfsshare" do |nfsshare|
+    nfsshare.vm.box = "centos/7"
+    nfsshare.vm.hostname = "nfsshare.example.com"
+    nfsshare.vm.network "private_network", ip: "172.42.42.150"
+    nfsshare.vm.provider "virtualbox" do |v|
+      v.name = "nfsshare"
+      v.memory = 2048
+      v.cpus = 2
+    end
+    nfsshare.vm.provision "shell", path: "bootstrap_nfsshare.sh"
+  end
+end

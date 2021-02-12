@@ -1,0 +1,20 @@
+export NAME=myfirstcluster.k8s.local
+export KOPS_STATE_STORE=s3://kops-production-prasad
+ssh-keygen 
+kops create cluster --zones ap-south-1a,ap-south-1b,ap-south-1c ${NAME}
+
+kops get ig --name ${NAME}
+kops edit ig nodes --name ${NAME}
+kops get ig --name ${NAME}
+
+kops edit ig <ig_name>
+
+kops update cluster ${NAME} --yes
+
+kops validate cluster
+
+#to see the admin password
+kubectl config view
+
+#dasbaoard API URI
+/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/

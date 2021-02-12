@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job 
+metadata: 
+  name: test-job
+spec:
+  backoffLimit: 3
+  completions: 5
+  parallelism: 2
+  template:
+    spec:
+      containers:
+      - name: test 
+        image: python:3-alpine
+        command: ["python"]
+        args: ["-c","import time; print ('Starting'); time.sleep(30); print('Done')"]
+      restartPolicy: Never
+  
